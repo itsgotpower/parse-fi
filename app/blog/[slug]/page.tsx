@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllSlugs, getPost, getRelatedPosts } from "@/lib/blog";
+import { DEFAULT_AUTHOR, DEFAULT_AUTHOR_URL, getAllSlugs, getPost, getRelatedPosts } from "@/lib/blog";
 import { BlogWidget } from "@/components/blog/blog-widget";
 import { BlogTocRail } from "@/components/blog/blog-toc-rail";
 import { buildStructuredData } from "@/lib/blog-jsonld";
@@ -113,7 +113,18 @@ export default async function BlogPostPage({
           {post.title}
         </h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-4">
-          <span className={labelClass}>{post.author}</span>
+          {post.author === DEFAULT_AUTHOR ? (
+            <a
+              href={DEFAULT_AUTHOR_URL}
+              rel="author noreferrer"
+              target="_blank"
+              className={`${labelClass} hover:text-foreground transition-colors underline underline-offset-2 decoration-border`}
+            >
+              {post.author}
+            </a>
+          ) : (
+            <span className={labelClass}>{post.author}</span>
+          )}
           <span className="text-muted-foreground/40" aria-hidden="true">·</span>
           <time className={labelClass} dateTime={post.publishedAt}>
             {formatDate(post.publishedAt)}

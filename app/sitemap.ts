@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPostMeta } from "@/lib/blog";
+import { BANK_GUIDES } from "@/lib/bank-guides";
 
 // Public marketing surface only — every URL here must also be reachable
 // signed-out (middleware PUBLIC_PATHS / matcher exclusions), or crawlers get a
@@ -26,6 +27,8 @@ const MARKETING_PATHS = [
   "/security",
   "/terms",
   "/blog",
+  "/ai-info",
+  "/guides",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -36,6 +39,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  // One URL per bank guide, from the same data module the pages render from —
+  // add a bank to lib/bank-guides.ts and its page is listed here automatically.
+  const guides: MetadataRoute.Sitemap = BANK_GUIDES.map((g) => ({
+    url: `${ORIGIN}/guides/${g.slug}`,
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+  }));
+
   return [
     { url: ORIGIN, changeFrequency: "weekly", priority: 1 },
     ...MARKETING_PATHS.map((path) => ({
@@ -43,6 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
+    ...guides,
     ...posts,
   ];
 }

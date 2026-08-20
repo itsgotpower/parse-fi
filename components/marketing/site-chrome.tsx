@@ -16,11 +16,13 @@ const FOOTER_LINKS = [
   { href: "/mcp", label: "MCP for Claude" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/switch", label: "Switch" },
+  { href: "/guides", label: "Statement guides" },
   { href: "/blog", label: "Blog" },
   { href: "/pricing", label: "Pricing" },
   { href: "/privacy", label: "Privacy" },
   { href: "/security", label: "Security" },
   { href: "/terms", label: "Terms" },
+  { href: "/ai-info", label: "AI info" },
 ] as const;
 
 export function MarketingHeader() {

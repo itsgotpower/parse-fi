@@ -1,4 +1,4 @@
-import type { Post } from "./blog";
+import { DEFAULT_AUTHOR, DEFAULT_AUTHOR_URL, type Post } from "./blog";
 
 // Structured data for a blog post. Search engines and AI answer engines
 // (Perplexity, Google AI Overviews, ChatGPT search) read schema.org JSON-LD to
@@ -48,7 +48,15 @@ export function buildStructuredData(post: Post): object {
     description: post.description,
     datePublished: iso(post.publishedAt),
     dateModified: iso(post.updatedAt),
-    author: { "@type": "Organization", name: post.author, url: ORIGIN },
+    author:
+      post.author === DEFAULT_AUTHOR
+        ? {
+            "@type": "Person",
+            name: post.author,
+            url: ORIGIN,
+            sameAs: [DEFAULT_AUTHOR_URL, "https://github.com/itsgotpower"],
+          }
+        : { "@type": "Person", name: post.author },
     publisher: PUBLISHER,
     mainEntityOfPage: { "@type": "WebPage", "@id": post.canonical },
     url: post.canonical,

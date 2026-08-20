@@ -42,6 +42,21 @@ It's descriptive first. Pare tells you the truth about where your money went and
 
 Pare does have *goals* — monthly spending limits per category with progress bars — so there's a light budgeting layer. But it would be dishonest to call that envelope budgeting. It's a guardrail on top of analysis, not a system for assigning every dollar a job before you spend it.
 
+## At a glance
+
+| | Pare | YNAB |
+|---|---|---|
+| Core method | Statement analysis, after the money moves | Envelope budgeting, before you spend |
+| How data gets in | Statements you download (PDF/OFX) | Automatic bank sync, or manual entry |
+| Bank login required | No | Yes for sync, no if you enter by hand |
+| Price at last check | Free self-hosted; $8/mo hosted, free tier | ~$14.99/mo, ~$109/yr |
+| Source code | Open (AGPL-3.0) | Closed |
+| Changes behaviour | Not really — it reports | Yes, that's the whole point |
+| Learning curve | Low | Real |
+| Ask Claude about it | Yes — built-in MCP server | No |
+
+Competitor details move; check their site for current numbers.
+
 ## The paradigm gap, stated plainly
 
 Put the two next to each other and the difference is about time:

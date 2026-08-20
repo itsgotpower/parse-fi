@@ -11,7 +11,15 @@ import { RAW_POSTS } from "./blog-content.generated";
 
 const SITE_ORIGIN = "https://pare.money";
 const WORDS_PER_MINUTE = 220;
-export const DEFAULT_AUTHOR = "The Pare team";
+export const DEFAULT_AUTHOR = "Scott Bauer";
+
+// Public profile for the default author. A named byline is only half the
+// authorship signal — search and answer engines weigh an author they can
+// resolve to a real, corroborated identity, so this is emitted as Person
+// `sameAs` in the article JSON-LD and linked from the visible byline. Posts
+// that set their own `author` in frontmatter deliberately get NEITHER (we
+// can't claim someone else's identity), so both surfaces check first.
+export const DEFAULT_AUTHOR_URL = "https://www.linkedin.com/in/itsgotpower/";
 
 export interface FaqItem {
   q: string;
@@ -112,7 +120,15 @@ function extractToc(markdown: string): TocItem[] {
 // anchor ids with a regex is safe and avoids pulling in a heavier renderer.
 function renderMarkdown(markdown: string): string {
   const html = marked.parse(markdown, { async: false, gfm: true }) as string;
-  return html.replace(/<(h[23])>(.*?)<\/\1>/g, (_full, tag: string, inner: string) => {
+  // Wrap GFM tables so they scroll inside their own container — a wide
+  // comparison table must never make the page body scroll sideways on a phone.
+  // Done here rather than in CSS because the scroll box has to be an element
+  // AROUND the table, and authors write plain markdown pipes.
+  const withTables = html.replace(
+    /<table>([\s\S]*?)<\/table>/g,
+    (_full, inner: string) => `<div class="table-scroll"><table>${inner}</table></div>`
+  );
+  return withTables.replace(/<(h[23])>(.*?)<\/\1>/g, (_full, tag: string, inner: string) => {
     const plain = inner.replace(/<[^>]+>/g, "");
     const id = slugify(plain);
     // Real anchor link (server-rendered, so it's crawlable and shareable). It's

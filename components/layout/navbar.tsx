@@ -118,7 +118,10 @@ export function Sidebar() {
     pathname === "/how-it-works" ||
     pathname === "/pricing" ||
     pathname === "/blog" ||
-    pathname.startsWith("/blog/")
+    pathname.startsWith("/blog/") ||
+    pathname === "/ai-info" ||
+    pathname === "/guides" ||
+    pathname.startsWith("/guides/")
   )
     return null;
 
