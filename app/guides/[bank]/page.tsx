@@ -119,6 +119,17 @@ export default async function BankGuidePage({
           ))}
         </ol>
 
+        {guide.login && (
+          <a
+            href={guide.login}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-6 font-mono text-[11px] tracking-widest uppercase border border-border bg-background px-4 h-10 text-foreground hover:bg-muted transition-colors"
+          >
+            Go to {guide.bank} login ↗
+          </a>
+        )}
+
         <section className="border border-border bg-card p-5 mt-8">
           <p className={labelClass}>Worth knowing</p>
           <p className="text-sm leading-relaxed text-foreground/90 mt-2">{guide.note}</p>
