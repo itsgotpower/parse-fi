@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MCP_CLIENTS } from "@/lib/mcp-clients";
 import type { Metadata } from "next";
 import { PALETTE } from "@/lib/colors";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/site-chrome";
@@ -188,6 +189,27 @@ export default function McpPage() {
               conversation context — so connect only clients you trust with your
               financial data.
             </p>
+          </Section>
+
+          <Section title="Set-up guides by client">
+            <p>
+              Step-by-step instructions for each client, with the exact config file
+              and the mistakes that break setups:
+            </p>
+            <div className="border border-border divide-y divide-border not-prose">
+              {MCP_CLIENTS.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/mcp/${c.slug}`}
+                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted transition-colors"
+                >
+                  <span className="font-mono text-sm">{c.client}</span>
+                  <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground shrink-0">
+                    {c.kind === "hosted" ? "Hosted" : "Self-hosted"} →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </Section>
 
           <Section title="Setting it up">

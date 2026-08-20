@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPostMeta } from "@/lib/blog";
 import { BANK_GUIDES } from "@/lib/bank-guides";
+import { MCP_CLIENTS } from "@/lib/mcp-clients";
 
 // Public marketing surface only — every URL here must also be reachable
 // signed-out (middleware PUBLIC_PATHS / matcher exclusions), or crawlers get a
@@ -47,6 +48,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // Per-client MCP setup guides, same generate-off-the-data-module pattern as
+  // the bank guides above.
+  const mcpClients: MetadataRoute.Sitemap = MCP_CLIENTS.map((c) => ({
+    url: `${ORIGIN}/mcp/${c.slug}`,
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+  }));
+
   return [
     { url: ORIGIN, changeFrequency: "weekly", priority: 1 },
     ...MARKETING_PATHS.map((path) => ({
@@ -55,6 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
     ...guides,
+    ...mcpClients,
     ...posts,
   ];
 }
