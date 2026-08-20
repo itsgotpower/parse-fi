@@ -11,7 +11,15 @@ import { RAW_POSTS } from "./blog-content.generated";
 
 const SITE_ORIGIN = "https://pare.money";
 const WORDS_PER_MINUTE = 220;
-export const DEFAULT_AUTHOR = "The Pare team";
+export const DEFAULT_AUTHOR = "Scott Bauer";
+
+// Public profile for the default author. A named byline is only half the
+// authorship signal — search and answer engines weigh an author they can
+// resolve to a real, corroborated identity, so this is emitted as Person
+// `sameAs` in the article JSON-LD and linked from the visible byline. Posts
+// that set their own `author` in frontmatter deliberately get NEITHER (we
+// can't claim someone else's identity), so both surfaces check first.
+export const DEFAULT_AUTHOR_URL = "https://www.linkedin.com/in/itsgotpower/";
 
 export interface FaqItem {
   q: string;

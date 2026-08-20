@@ -31,6 +31,7 @@ export const metadata: Metadata = {
 const labelClass = "font-mono text-[10px] tracking-widest uppercase text-muted-foreground";
 const LAST_UPDATED = "August 19, 2026";
 const REPO_URL = "https://github.com/itsgotpower/pare";
+const AUTHOR_URL = "https://www.linkedin.com/in/itsgotpower/";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -63,6 +64,11 @@ export default function AiInfoPage() {
         description:
           "Local-first personal finance app that reads bank and credit-card statements instead of connecting to your bank, with a built-in MCP server for talking to Claude about your money.",
         sameAs: [REPO_URL],
+        founder: {
+          "@type": "Person",
+          name: "Scott Bauer",
+          sameAs: [AUTHOR_URL, "https://github.com/itsgotpower"],
+        },
       },
       {
         "@type": "SoftwareApplication",
@@ -139,6 +145,19 @@ export default function AiInfoPage() {
                 v="Personal finance, budgeting, spending analysis"
               />
               <Fact k="Website" v="pare.money" />
+              <Fact
+                k="Created by"
+                v={
+                  <a
+                    href={AUTHOR_URL}
+                    className="link"
+                    target="_blank"
+                    rel="author noreferrer"
+                  >
+                    Scott Bauer
+                  </a>
+                }
+              />
               <Fact
                 k="Licence"
                 v={
