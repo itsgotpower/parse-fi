@@ -139,7 +139,12 @@ export async function middleware(request: NextRequest) {
 // are excluded: browsers, the SW, and crawlers all fetch them without a
 // session, and the SW must be able to precache /offline signed-out.
 export const config = {
+  // NOTE: the hex `.txt` entry is the IndexNow key file (public/8d2fb80fbf2e9608b7fb502e642da887.txt).
+  // IndexNow verifies domain ownership by fetching it ANONYMOUSLY, so it must
+  // bypass the auth gate exactly like sitemap.xml/robots.txt — otherwise the
+  // fetch gets a /login redirect and every submission is rejected 403.
+  // Keep in sync with scripts/indexnow.mjs (same key) — see that file's header.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|sw.js|icon-192.png|icon-512.png|icon-512-maskable.png|offline|demo-data.json|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|sw.js|icon-192.png|icon-512.png|icon-512-maskable.png|offline|demo-data.json|sitemap.xml|robots.txt|8d2fb80fbf2e9608b7fb502e642da887\\.txt).*)",
   ],
 };
