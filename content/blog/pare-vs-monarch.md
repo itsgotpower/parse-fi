@@ -34,6 +34,21 @@ Monarch uses aggregators (Plaid and MX) to pull your transactions automatically.
 
 Almost every other difference in this comparison is downstream of that one choice, so it's worth being clear about the trade before the feature grid: Monarch buys you automation at the cost of a live line into your accounts held by a third party. Pare buys you privacy and ownership at the cost of a few minutes a month. We made the full case for the statement-first approach in [why we don't connect to your bank](/blog/why-we-dont-connect-to-your-bank).
 
+## At a glance
+
+| | Pare | Monarch |
+|---|---|---|
+| How data gets in | Statements you download (PDF/OFX); optional SimpleFIN | Automatic bank sync via aggregator |
+| Bank login required | No | Yes, via aggregator |
+| Platforms | Any browser, installable PWA, self-hostable | Web, iOS, Android |
+| Price at last check | Free self-hosted; $8/mo hosted, free tier | ~$14.99/mo, ~$99.99/yr |
+| Source code | Open (AGPL-3.0) | Closed |
+| Where data lives | One SQLite file you hold, or your hosted account | Monarch's servers |
+| Household sharing | No | Yes — a genuine strength |
+| Ask Claude about it | Yes — built-in MCP server | No |
+
+Competitor details move; check their site for current numbers.
+
 ## Pricing
 
 Monarch is subscription-only — around **$14.99/month, or roughly $100/year** if you pay annually (check their site for the current number). There's a trial, but there is no free tier; when it ends, you pay or you lose access.

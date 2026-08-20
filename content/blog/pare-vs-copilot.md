@@ -10,6 +10,12 @@ keywords:
   - "finance app not Apple only"
   - "private budgeting app"
 canonical: "https://pare.money/blog/pare-vs-copilot"
+tldr:
+  - "Copilot is Apple-only and gorgeous. If you're on iPhone and Mac and want the most polished app, it wins on craft and we won't argue."
+  - "Copilot connects to your bank through Plaid. Pare reads statements you download, so nothing holds a standing connection."
+  - "Copilot is ~$95/year with no free tier. Pare is free self-hosted, $8/month hosted, with a free tier."
+  - "Pare runs anywhere there's a browser — Android, Windows, Linux — where Copilot isn't an option at all."
+  - "Pick Copilot for native polish and automatic sync. Pick Pare for privacy, platform freedom, and owning the file."
 ---
 
 Copilot is the best-looking money app on the App Store, and if you pay for it you probably like it — the design, the smart categorization, the way it feels genuinely native on your iPhone. Two things tend to nag anyway: it runs only on Apple hardware, and to work at all it needs a live connection to your bank through a data aggregator. This is a head-to-head on where Pare and Copilot actually differ. We make Pare, so read it with that in mind — but Copilot is a good product, and we'll be clear about where it wins.
@@ -19,6 +25,21 @@ Copilot is the best-looking money app on the App Store, and if you pay for it yo
 Copilot connects to your bank. Pare reads your statements.
 
 Copilot uses an aggregator (Plaid) to pull your transactions automatically, and it lives on Apple platforms as a polished iOS and Mac app. Pare is statements-first: you drop in the PDF or OFX statements you already download, and it parses, categorizes, and charts them — in any browser, on any operating system, or on a server you run yourself. There's an optional SimpleFIN sync if you'd rather not hand-feed an account, but it's off by default and you pay the bridge directly, so Pare never sees your bank login. Almost everything below follows from that one split. We made the full case for the statement-first approach in [why we don't connect to your bank](/blog/why-we-dont-connect-to-your-bank).
+
+## At a glance
+
+| | Pare | Copilot |
+|---|---|---|
+| How data gets in | Statements you download (PDF/OFX); optional SimpleFIN | Automatic bank sync via Plaid |
+| Bank login required | No | Yes, via aggregator |
+| Platforms | Any browser, installable PWA, self-hostable | iOS and macOS only |
+| Price at last check | Free self-hosted; $8/mo hosted, free tier | ~$13/mo, ~$95/yr, no free tier |
+| Source code | Open (AGPL-3.0) | Closed |
+| Where data lives | One SQLite file you hold, or your hosted account | Copilot's servers |
+| Household sharing | No | No |
+| Ask Claude about it | Yes — built-in MCP server | No |
+
+Competitor details move; check their site for current numbers.
 
 ## Pricing
 

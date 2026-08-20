@@ -112,7 +112,15 @@ function extractToc(markdown: string): TocItem[] {
 // anchor ids with a regex is safe and avoids pulling in a heavier renderer.
 function renderMarkdown(markdown: string): string {
   const html = marked.parse(markdown, { async: false, gfm: true }) as string;
-  return html.replace(/<(h[23])>(.*?)<\/\1>/g, (_full, tag: string, inner: string) => {
+  // Wrap GFM tables so they scroll inside their own container — a wide
+  // comparison table must never make the page body scroll sideways on a phone.
+  // Done here rather than in CSS because the scroll box has to be an element
+  // AROUND the table, and authors write plain markdown pipes.
+  const withTables = html.replace(
+    /<table>([\s\S]*?)<\/table>/g,
+    (_full, inner: string) => `<div class="table-scroll"><table>${inner}</table></div>`
+  );
+  return withTables.replace(/<(h[23])>(.*?)<\/\1>/g, (_full, tag: string, inner: string) => {
     const plain = inner.replace(/<[^>]+>/g, "");
     const id = slugify(plain);
     // Real anchor link (server-rendered, so it's crawlable and shareable). It's
