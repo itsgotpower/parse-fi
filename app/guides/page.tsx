@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/site-chrome";
-import { BANK_GUIDES, BADGE } from "@/lib/bank-guides";
+import { BADGE, groupedGuides } from "@/lib/bank-guides";
 
 // Public index for the per-bank statement-download guides. Reachable signed-out
 // (middleware PUBLIC_PATHS + WAITLIST_PUBLIC, listed in app/sitemap.ts).
@@ -15,7 +15,7 @@ import { BANK_GUIDES, BADGE } from "@/lib/bank-guides";
 export const metadata: Metadata = {
   title: "How to download your bank statements — PARE",
   description:
-    "Step-by-step guides for downloading PDF or OFX/QFX statements from CIBC, RBC, TD, Scotiabank, BMO, Tangerine, Wealthsimple and American Express — no bank login required.",
+    "Step-by-step guides for downloading PDF or OFX/QFX statements from Chase, Bank of America, Wells Fargo, Citi, Capital One, CIBC, RBC, TD and more — no bank login required.",
   alternates: { canonical: "https://pare.money/guides" },
 };
 
@@ -41,28 +41,36 @@ export default function GuidesIndexPage() {
         </p>
 
         <p className="text-sm leading-relaxed text-foreground/90 mt-4">
-          If your bank isn&apos;t listed, the{" "}
+          One honest note on coverage: Pare&apos;s PDF parsers are tuned for
+          Canadian banks and American Express. For US institutions the reliable
+          path is the OFX/QFX export rather than the statement PDF, and each
+          guide below says so. If your bank isn&apos;t listed at all, the{" "}
           <Link href="/guides/any-other-bank" className="link">
             OFX/QFX guide
           </Link>{" "}
           covers the universal export that nearly every bank offers.
         </p>
 
-        <div className="mt-8 border border-border divide-y divide-border">
-          {BANK_GUIDES.map((g) => (
-            <Link
-              key={g.slug}
-              href={`/guides/${g.slug}`}
-              className="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-muted transition-colors"
-            >
-              <span className="min-w-0">
-                <span className="font-mono text-sm block">{g.bank}</span>
-                <span className="text-xs text-muted-foreground line-clamp-1">{g.formats}</span>
-              </span>
-              <span className={`${labelClass} shrink-0`}>{BADGE[g.status].label} →</span>
-            </Link>
-          ))}
-        </div>
+        {groupedGuides().map((group) => (
+          <section key={group.region} className="mt-8">
+            <h2 className={`${labelClass} mb-3`}>{group.label}</h2>
+            <div className="border border-border divide-y divide-border">
+              {group.guides.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/guides/${g.slug}`}
+                  className="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-muted transition-colors"
+                >
+                  <span className="min-w-0">
+                    <span className="font-mono text-sm block">{g.bank}</span>
+                    <span className="text-xs text-muted-foreground line-clamp-1">{g.formats}</span>
+                  </span>
+                  <span className={`${labelClass} shrink-0`}>{BADGE[g.status].label} →</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
 
         <section className="border border-border bg-card p-5 mt-10">
           <p className={labelClass}>Why statements, not a bank login</p>

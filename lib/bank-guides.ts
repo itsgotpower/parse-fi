@@ -22,6 +22,13 @@
 // bank whose parser graduates from scaffold to tuned should move to "pdf".
 
 export type GuideStatus = "pdf" | "beta" | "ofx";
+export type Region = "CA" | "US" | "any";
+
+export const REGION_LABEL: Record<Region, string> = {
+  CA: "Canada",
+  US: "United States",
+  any: "Any bank",
+};
 
 export interface BankGuide {
   /** URL segment for /guides/<slug>. Stable — changing one breaks a live URL. */
@@ -43,11 +50,18 @@ export interface BankGuide {
    * Omitted for the catch-all entry, which has no single bank to link to.
    */
   login?: string;
+  /**
+   * Which country's institution this is. Drives grouping on /guides and in the
+   * /upload accordion — a flat list of every bank is unscannable. "any" is for
+   * entries that aren't country-specific (Amex, the catch-all).
+   */
+  region: Region;
 }
 
 export const BANK_GUIDES: BankGuide[] = [
   {
     slug: "cibc",
+    region: "CA",
     login: "https://www.cibconline.cibc.com/",
     bank: "CIBC",
     status: "pdf",
@@ -64,6 +78,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "american-express",
+    region: "any",
     login: "https://www.americanexpress.com/en-ca/account/login/",
     bank: "American Express",
     status: "pdf",
@@ -80,6 +95,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "rbc",
+    region: "CA",
     login: "https://www.rbcroyalbank.com/sign-in.html",
     bank: "RBC",
     status: "beta",
@@ -96,6 +112,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "td",
+    region: "CA",
     login: "https://easyweb.td.com/",
     bank: "TD",
     status: "beta",
@@ -112,6 +129,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "scotiabank",
+    region: "CA",
     login: "https://www.scotiaonline.scotiabank.com/online/authentication/authentication.bns",
     bank: "Scotiabank",
     status: "beta",
@@ -128,6 +146,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "bmo",
+    region: "CA",
     login: "https://www1.bmo.com/banking/digital/sign-in",
     bank: "BMO",
     status: "beta",
@@ -144,6 +163,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "tangerine",
+    region: "CA",
     login: "https://www.tangerine.ca/login/",
     bank: "Tangerine",
     status: "beta",
@@ -160,6 +180,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "wealthsimple",
+    region: "CA",
     login: "https://my.wealthsimple.com/",
     bank: "Wealthsimple",
     status: "beta",
@@ -174,7 +195,224 @@ export const BANK_GUIDES: BankGuide[] = [
       "Wealthsimple doesn't offer an OFX export, so PDF is the only path. Check your first import's totals against the statement summary.",
   },
   {
+    slug: "chase",
+    region: "US",
+    bank: "Chase",
+    status: "ofx",
+    intro:
+      "Chase offers a Quicken (.qfx) download alongside CSV, which is the format to use — Pare has no Chase PDF parser, so the statement PDF is not the path here.",
+    steps: [
+      "Sign in at chase.com and open the account.",
+      "Account activity → the download icon (or “Download account activity”).",
+      "Choose a date range and pick the Quicken (.QFX) file type — not CSV, not the PDF.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "Chase also offers CSV, but Pare's upload drop zone doesn't accept CSV — its dates are too lossy to dedup safely. QFX carries a bank-assigned transaction id, which is what makes re-importing an overlapping range harmless.",
+    login: "https://www.chase.com/",
+  },
+  {
+    slug: "bank-of-america",
+    region: "US",
+    bank: "Bank of America",
+    status: "ofx",
+    intro:
+      "Bank of America exports Quicken-format files from the account activity view. Use that rather than the PDF statement — Pare has no BofA PDF parser.",
+    steps: [
+      "Sign in at bankofamerica.com and open the account.",
+      "Statements & Documents holds the PDFs; for Pare you want the export instead.",
+      "From account activity choose Download, then the Quicken (.qfx) format.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "BofA limits how far back the export reaches on some accounts. If you want more history than it offers, pull several shorter ranges — re-importing overlapping files is safe, because dedup keys on the bank's own transaction id.",
+    login: "https://www.bankofamerica.com/",
+  },
+  {
+    slug: "wells-fargo",
+    region: "US",
+    bank: "Wells Fargo",
+    status: "ofx",
+    intro:
+      "Wells Fargo's “Download Account Activity” produces a Quicken (.qfx) file, which is the reliable path into Pare. The PDF statement has no parser here.",
+    steps: [
+      "Sign in at wellsfargo.com and open the account.",
+      "Find Download Account Activity (near the transaction list).",
+      "Pick a date range and the Quicken (.qfx) format.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "Wells Fargo's export window is limited, so pull it regularly rather than trying to backfill years at once.",
+    login: "https://www.wellsfargo.com/",
+  },
+  {
+    slug: "citi",
+    region: "US",
+    bank: "Citi",
+    status: "ofx",
+    intro:
+      "Citi keeps statements under the account's Statements section and offers a transaction download. Formats vary by product, so check what your account exposes.",
+    steps: [
+      "Sign in at citi.com and open the account.",
+      "Look for Download / Export near the transaction list.",
+      "Choose a Quicken or OFX/QFX format if it's offered.",
+      "Drop the file into Pare.",
+    ],
+    formats: "OFX/QFX where offered. PDF statements exist but Pare can't parse them.",
+    note:
+      "Citi's export formats differ between card and deposit accounts, and CSV is sometimes the only option — which Pare's drop zone doesn't accept. If you can't get OFX/QFX from Citi, the honest answer is that Pare isn't a good fit for that account yet.",
+    login: "https://www.citi.com/",
+  },
+  {
+    slug: "capital-one",
+    region: "US",
+    bank: "Capital One",
+    status: "ofx",
+    intro:
+      "Capital One offers a transaction export from the account activity view. Availability of the Quicken format varies by product.",
+    steps: [
+      "Sign in at capitalone.com and open the account.",
+      "Open account activity and look for Download / Export transactions.",
+      "Pick Quicken (.qfx) if offered.",
+      "Drop the file into Pare.",
+    ],
+    formats: "OFX/QFX where offered. PDF statements exist but Pare can't parse them.",
+    note:
+      "Some Capital One products only export CSV, which Pare's drop zone doesn't accept. Check the format list before planning around it.",
+    login: "https://www.capitalone.com/",
+  },
+  {
+    slug: "us-bank",
+    region: "US",
+    bank: "U.S. Bank",
+    status: "ofx",
+    intro:
+      "U.S. Bank exports Quicken-format transaction files, which is the path into Pare — there's no U.S. Bank PDF parser.",
+    steps: [
+      "Sign in at usbank.com and open the account.",
+      "From transactions, choose Download / Export.",
+      "Pick the Quicken (.qfx) format.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "If the download page offers both “Quicken” and “Quicken Web Connect”, either produces an OFX-family file Pare reads.",
+    login: "https://www.usbank.com/",
+  },
+  {
+    slug: "pnc",
+    region: "US",
+    bank: "PNC",
+    status: "ofx",
+    intro:
+      "PNC offers a Quicken/QFX export from online banking. Use it rather than the PDF — Pare has no PNC PDF parser.",
+    steps: [
+      "Sign in at pnc.com and open the account.",
+      "From the activity view choose Download transactions.",
+      "Pick the Quicken (.qfx) format.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "PNC's export range is capped per download; several shorter pulls are fine because overlapping re-imports dedup on the bank's transaction id.",
+    login: "https://www.pnc.com/",
+  },
+  {
+    slug: "discover",
+    region: "US",
+    bank: "Discover",
+    status: "ofx",
+    intro:
+      "Discover offers transaction downloads including a Quicken format. Use that rather than the statement PDF.",
+    steps: [
+      "Sign in at discover.com and open the account.",
+      "Go to Statements / Activity and choose Download transactions.",
+      "Pick Quicken (.qfx) rather than CSV or Excel.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "Discover's downloads are organised per statement period, so grabbing a year means several files. Import them all — duplicates across overlapping files are handled.",
+    login: "https://www.discover.com/",
+  },
+  {
+    slug: "ally",
+    region: "US",
+    bank: "Ally",
+    status: "ofx",
+    intro:
+      "Ally Bank exports transactions in Quicken format from the account activity view. That's the path into Pare.",
+    steps: [
+      "Sign in at ally.com and open the account.",
+      "Open account activity and choose Download.",
+      "Pick the Quicken (.qfx) format.",
+      "Drop the .qfx into Pare.",
+    ],
+    formats: "OFX/QFX (recommended). PDF statements exist but Pare can't parse them.",
+    note:
+      "Ally's savings buckets appear inside one account rather than as separate accounts, so a single export can mix them. Pare treats the file as one account — which is usually what you want.",
+    login: "https://www.ally.com/",
+  },
+  {
+    slug: "charles-schwab",
+    region: "US",
+    bank: "Charles Schwab",
+    status: "ofx",
+    intro:
+      "Schwab's bank and brokerage accounts both offer transaction exports. Pare reads the cash-side transactions; it does not do holdings-level investment analysis.",
+    steps: [
+      "Sign in at schwab.com and open the account.",
+      "History / Transactions → Export.",
+      "Pick a Quicken or OFX/QFX format if offered.",
+      "Drop the file into Pare.",
+    ],
+    formats: "OFX/QFX where offered. PDF statements exist but Pare can't parse them.",
+    note:
+      "Pare has no portfolio tracking — it will read Schwab cash transactions as an account, but positions, cost basis and performance are outside what it does. Net worth supports manual entries for investments instead.",
+    login: "https://www.schwab.com/",
+  },
+  {
+    slug: "truist",
+    region: "US",
+    bank: "Truist",
+    status: "ofx",
+    intro:
+      "Truist offers transaction downloads from online banking. Formats vary by account following the BB&T/SunTrust merger, so check what yours exposes.",
+    steps: [
+      "Sign in at truist.com and open the account.",
+      "From account activity choose Download / Export.",
+      "Pick a Quicken or OFX/QFX format if offered.",
+      "Drop the file into Pare.",
+    ],
+    formats: "OFX/QFX where offered. PDF statements exist but Pare can't parse them.",
+    note:
+      "Legacy BB&T and SunTrust accounts still behave differently in places. If the export only offers CSV, Pare's drop zone won't take it.",
+    login: "https://www.truist.com/",
+  },
+  {
+    slug: "navy-federal",
+    region: "US",
+    bank: "Navy Federal",
+    status: "ofx",
+    intro:
+      "Navy Federal offers transaction exports from account history, including Quicken-compatible formats on most accounts.",
+    steps: [
+      "Sign in at navyfederal.org and open the account.",
+      "Account history → Export / Download.",
+      "Pick a Quicken or OFX/QFX format if offered.",
+      "Drop the file into Pare.",
+    ],
+    formats: "OFX/QFX where offered. PDF statements exist but Pare can't parse them.",
+    note:
+      "Export options are narrower than at the large national banks. If OFX/QFX isn't offered for your account type, Pare can't ingest it today.",
+    login: "https://www.navyfederal.org/",
+  },
+  {
     slug: "any-other-bank",
+    region: "any",
     bank: "Any other bank",
     status: "ofx",
     intro:
@@ -198,4 +436,18 @@ export const BADGE: Record<GuideStatus, { label: string; short: string }> = {
 
 export function getBankGuide(slug: string): BankGuide | undefined {
   return BANK_GUIDES.find((g) => g.slug === slug);
+}
+
+/** Guides grouped for display, in a stable order: Canada, US, then the
+ *  country-agnostic entries (Amex, the catch-all). A flat list of every
+ *  supported institution is unscannable once the US banks are included. */
+export function groupedGuides(): { region: Region; label: string; guides: BankGuide[] }[] {
+  const order: Region[] = ["CA", "US", "any"];
+  return order
+    .map((region) => ({
+      region,
+      label: REGION_LABEL[region],
+      guides: BANK_GUIDES.filter((g) => g.region === region),
+    }))
+    .filter((group) => group.guides.length > 0);
 }
