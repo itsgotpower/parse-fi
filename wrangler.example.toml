@@ -1,13 +1,29 @@
-# Cloudflare Workers config for Pare (hosted pivot — Phase 0 scaffolding).
+# TEMPLATE — copy to wrangler.toml and fill in your own resource ids.
 #
-# Deploys the CURRENT single-user Next.js app to Workers via @opennextjs/cloudflare,
-# unchanged, against the demo DB. The build emits .open-next/worker.js (the Worker
-# entrypoint) and .open-next/assets (static assets), referenced below.
+# You do NOT need this to run Pare. Self-hosting reads a local SQLite file and
+# touches Cloudflare not at all: `npm run dev`.
 #
-# The D1 (`DB`) and Durable Object (`USER_DATA`) bindings below are LIVE as of
-# Phase 2: better-auth reads `env.DB` and getRepoForUser() routes per-user data to
-# `env.USER_DATA`. See hosted-product-plan.md (Phases 1–2) and DEPLOY.md.
-
+# This exists for one case: you forked Pare and want your OWN hosted deploy on
+# Cloudflare. The committed wrangler.toml points at pare.money's account, so it
+# is useless to you. Instead:
+#
+#   1. cp wrangler.example.toml wrangler.toml
+#   2. Provision your resources and paste the ids over the all-zero placeholders:
+#        wrangler d1 create pare-auth          -> database_id
+#        wrangler kv namespace create PARSE_JOBS -> id
+#        wrangler r2 bucket create <name>
+#        wrangler queues create <name>
+#   3. Set secrets (never commit them):
+#        wrangler secret put BETTER_AUTH_SECRET
+#        wrangler secret put PARE_AUTH_SECRET
+#        (plus AUTH_EMAIL_FROM / RESEND_API_KEY if you want email)
+#   4. npm run cf:deploy
+#
+# Requires the Cloudflare Workers PAID plan — Queues and Containers are not on
+# the free tier.
+#
+# Keep this file in sync with wrangler.toml when the SHAPE of the config changes
+# (a new binding, a new migration tag) — ids stay placeholders here, always.
 name = "pare"
 # Custom entrypoint (worker.ts) re-exports OpenNext's generated fetch handler
 # (.open-next/worker.js) AND the UserDataObject Durable Object class, so both are
@@ -103,7 +119,13 @@ class_name = "UserDataObject"
 # SQLite-backed Durable Object classes, so both go in new_sqlite_classes.
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["UserDataObject", "ParserContainer"]
+new_sqlite_classes = ["UserDataObject"]
+
+# ParserContainer arrives as its OWN migration tag. Adding it to the v1 list
+# instead is rejected on an account that already applied v1 ("class redefined").
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["ParserContainer"]
 
 # --- PDF parser container (hosted parsing path) ---
 #

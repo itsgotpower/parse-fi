@@ -37,33 +37,49 @@ import type { AnyRepoCall } from "./lib/repo/repo-rpc";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import openNextHandler from "./.open-next/worker.js";
+import { queueHandler, type QueueConsumerEnv } from "./lib/queue/consumer";
+import type { ParseJobMessage, QueueMessageBatchLike } from "./lib/queue/types";
+import {
+  handleEmailMessage,
+  type EmailMessageLike,
+  type EmailWorkerEnv,
+  type EmailCtxLike,
+} from "./cloud/ingest/email-worker";
 import * as Sentry from "@sentry/cloudflare";
 import { sentryOptions } from "./lib/sentry";
 
-// BRANCH SPLIT — READ BEFORE EDITING. This file is a MATCHED PAIR with
-// wrangler.toml, and the two branches carry different versions of both ON
-// PURPOSE:
+// MATCHED PAIR with wrangler.toml — change the two together. Every handler and
+// exported Durable Object class below must have a corresponding declaration in
+// wrangler.toml ([[queues.consumers]], [[containers]], [[durable_objects]],
+// [triggers]); exporting a DO class the config never declares breaks the deploy.
 //
-//   main             — trimmed config (no queues/containers/D1), so this entry
-//                      module omits `queue`, `email`, and the ParserContainer
-//                      export. A fork or throwaway preview deploys on the
-//                      Cloudflare Free plan with no provisioned resources.
-//   deploy/full-app  — the full data plane. Its worker.ts carries `queue` +
-//                      `email` + `export { ParserContainer }`, matching its
-//                      wrangler.toml [[queues]] / [[containers]] blocks.
+// `main` and `deploy/full-app` now carry the SAME config and the SAME entry
+// module. They used to differ — main had a trimmed config with these handlers
+// removed — and that split drifted unnoticed for 38 commits before breaking a
+// deploy merge. Don't reintroduce it.
 //
-// So DON'T "restore" the missing handlers here to make the branches match:
-// exporting a Durable Object class that this branch's wrangler.toml never
-// declares breaks the deploy. Change the config and the entry module together,
-// on the branch that owns them. (An earlier version of this note claimed the
-// full handler "lives on main" — it doesn't, and that error is what let the
-// two branches drift apart unnoticed.)
-//
-// Everything else — lib/, components/, app/, the queue CONSUMER itself — is
-// shared and must stay identical on both branches.
+// Handlers only run when their trigger is configured, so this file is safe on a
+// deploy whose resources aren't provisioned: no queue consumer means `queue`
+// never fires, no Email Routing rule means `email` never fires, no [triggers]
+// cron means `scheduled` never fires.
 const handler = {
   // The Next.js app's fetch handler, untouched.
   fetch: (openNextHandler as { fetch: (...args: unknown[]) => Promise<Response> }).fetch,
+
+  // The P4 async parse pipeline. Cloudflare delivers a MessageBatch to this
+  // handler for each batch pulled off the PARSE_QUEUE consumer (wired in P6). It
+  // acks/retries per message; a throw from a message's processing redelivers only
+  // that message (we use per-message ack/retry, not ackAll/retryAll).
+  async queue(batch: QueueMessageBatchLike<ParseJobMessage>, env: QueueConsumerEnv) {
+    return queueHandler(batch, env);
+  },
+
+  // Email ingest: statements forwarded to *@in.pare.money land here via Email
+  // Routing (routing rule configured in the dashboard, not wrangler.toml). The
+  // handler never throws on bad mail; without a routing rule it simply never runs.
+  async email(message: EmailMessageLike, env: EmailWorkerEnv, ctx: EmailCtxLike) {
+    return handleEmailMessage(message, env, ctx);
+  },
 
   // Daily SimpleFIN sync (wrangler `[triggers] crons`). Same env-parameter
   // discipline as the queue consumer: everything resolves off `env` (D1 via
@@ -71,8 +87,6 @@ const handler = {
   // is not reliably available inside a scheduled() invocation. Without a cron
   // trigger configured this handler simply never runs, so deploys whose
   // wrangler config has no [triggers] (e.g. the trimmed one) are unaffected.
-  // NOTE for the deploy/full-app merge: that branch's worker.ts also carries
-  // `queue` + `email` handlers — keep all three side by side there.
   async scheduled(_event: unknown, env: unknown) {
     const { scheduledSimplefinSync } = await import("./cloud/simplefin/scheduled");
     await scheduledSimplefinSync(env as never);
@@ -91,8 +105,11 @@ export default Sentry.withSentry(
   handler
 );
 
-// (WAITLIST LAUNCH: the `ParserContainer` export is omitted here — no [[containers]]
-// in the trimmed wrangler.toml. Restore it with the queue handler for the full app.)
+// The PDF parser runs in a Cloudflare Container (Python + poppler — unavailable in
+// the Workers runtime). Like UserDataObject, the Container-backed Durable Object
+// class must be exported from the entry module so wrangler can register it
+// (wrangler.toml [[containers]] + [[durable_objects.bindings]] class_name = "ParserContainer").
+export { ParserContainer } from "./lib/parser/parser-container-do";
 
 // The registered Durable Object. Extends the Workers DurableObject base (so the
 // platform recognises it as a DO with storage + an input gate) and delegates all
