@@ -40,14 +40,27 @@ import openNextHandler from "./.open-next/worker.js";
 import * as Sentry from "@sentry/cloudflare";
 import { sentryOptions } from "./lib/sentry";
 
-// WAITLIST LAUNCH: this branch ships the marketing/waitlist landing only, so the
-// async parse pipeline (the `queue` handler) and the parser Container are dropped
-// from the entry module to match the trimmed wrangler.toml (no queues/containers
-// configured). The full handler — `queue` + the `ParserContainer` export — lives
-// on `main`; restore both here when re-enabling the upload pipeline. ALSO restore
-// an `email` handler wired to cloud/ingest/email-worker.ts's handleEmailMessage —
-// the email-ingest adapter exists but has never been wired to a Worker entry
-// (it needs an Email Routing binding in wrangler too).
+// BRANCH SPLIT — READ BEFORE EDITING. This file is a MATCHED PAIR with
+// wrangler.toml, and the two branches carry different versions of both ON
+// PURPOSE:
+//
+//   main             — trimmed config (no queues/containers/D1), so this entry
+//                      module omits `queue`, `email`, and the ParserContainer
+//                      export. A fork or throwaway preview deploys on the
+//                      Cloudflare Free plan with no provisioned resources.
+//   deploy/full-app  — the full data plane. Its worker.ts carries `queue` +
+//                      `email` + `export { ParserContainer }`, matching its
+//                      wrangler.toml [[queues]] / [[containers]] blocks.
+//
+// So DON'T "restore" the missing handlers here to make the branches match:
+// exporting a Durable Object class that this branch's wrangler.toml never
+// declares breaks the deploy. Change the config and the entry module together,
+// on the branch that owns them. (An earlier version of this note claimed the
+// full handler "lives on main" — it doesn't, and that error is what let the
+// two branches drift apart unnoticed.)
+//
+// Everything else — lib/, components/, app/, the queue CONSUMER itself — is
+// shared and must stay identical on both branches.
 const handler = {
   // The Next.js app's fetch handler, untouched.
   fetch: (openNextHandler as { fetch: (...args: unknown[]) => Promise<Response> }).fetch,
