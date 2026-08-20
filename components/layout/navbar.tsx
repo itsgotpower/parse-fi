@@ -109,6 +109,7 @@ export function Sidebar() {
     pathname === "/demo" ||
     pathname === "/about" ||
     pathname === "/mcp" ||
+    pathname.startsWith("/mcp/") ||
     pathname === "/privacy" ||
     pathname === "/terms" ||
     pathname === "/security" ||
