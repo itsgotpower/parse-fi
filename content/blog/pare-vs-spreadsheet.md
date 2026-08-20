@@ -10,6 +10,12 @@ keywords:
   - "personal finance spreadsheet"
   - "Tiller vs app"
 canonical: "https://pare.money/blog/pare-vs-spreadsheet"
+tldr:
+  - "A hand-built spreadsheet is the most flexible and most vendor-free option there is. Nothing beats it on those two axes."
+  - "It's also a chore you maintain forever — importing, categorising, fixing formulas — and that's why most people quietly abandon theirs."
+  - "Tiller automates the feed for ~$79/year, but it uses a bank aggregator, so it carries the same live-connection question as any linked app."
+  - "Pare builds the analysis for you from statements: forecasts, baselines, subscription detection, net worth — none of which you maintain."
+  - "Keep the spreadsheet if the tending is the point. Switch if you want the answers without building them."
 ---
 
 If you track your money in a spreadsheet, you already know the appeal: it's yours, it does exactly what you told it to, and no company can change it out from under you. Maybe you built it by hand in Google Sheets, maybe you use Tiller to feed transactions into it automatically for around $79 a year (check their site for the current number). Either way, it's flexible in a way no app quite matches — and it's a small chore you maintain forever. This is an honest look at when the spreadsheet is still the right tool and when an app that builds itself earns its place. We make Pare, so read it with that in mind, but a good spreadsheet is genuinely hard to beat on its own terms.
@@ -19,6 +25,20 @@ If you track your money in a spreadsheet, you already know the appeal: it's your
 A spreadsheet is a canvas you maintain. Pare is a tool that builds itself.
 
 With a spreadsheet, you own the layout, the formulas, and the categories, and you keep the whole thing running — importing rows, tagging them, fixing the formula that broke when you added a column. Pare reads the statements you already download and builds the dashboard on import; you don't design it, and you don't maintain it. There's a wrinkle worth naming up front: Tiller feeds your sheet through a bank aggregator, so a Tiller-fed spreadsheet carries the same live-connection-to-your-bank question that any bank-linked app does. A sheet you paste into by hand doesn't, and neither does Pare, which reads statements instead. (We made that whole case in [why we don't connect to your bank](/blog/why-we-dont-connect-to-your-bank).)
+
+## At a glance
+
+| | Pare | Hand-built sheet | Tiller |
+|---|---|---|---|
+| Ongoing effort | One upload a month | Continuous | Categorising and upkeep |
+| Bank login required | No | No | Yes, via aggregator |
+| Flexibility | Fixed analysis | Total | Total |
+| Analysis built for you | Forecast, baseline, subscriptions, net worth | Whatever you build | Whatever you build |
+| Price at last check | Free self-hosted; $8/mo hosted | Free | ~$79/yr |
+| Portability | One SQLite file | A file, fully vendor-free | The sheet stays yours |
+| Ask Claude about it | Yes — built-in MCP server | Not directly | Not directly |
+
+Competitor details move; check their site for current numbers.
 
 ## Effort
 

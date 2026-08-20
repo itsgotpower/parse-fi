@@ -397,3 +397,66 @@
   border-top: 1px solid var(--border);
   margin: 2rem 0;
 }
+
+/* Comparison tables. Authored as GFM tables in content/blog/*.md — the
+   answer-first surface that AI answer engines lift verbatim, so the markup
+   stays a real <table> rather than a styled grid. The wrapper scrolls on its
+   own so a wide table never makes the page body scroll sideways on a phone
+   (Pare is an installed PWA; phone layout is a first-class target). */
+.prose-pare .table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.prose-pare table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 30rem;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.prose-pare thead th {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  text-align: left;
+  padding: 0.75rem 0.875rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+.prose-pare tbody td {
+  padding: 0.75rem 0.875rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+  color: color-mix(in oklch, var(--foreground) 90%, transparent);
+}
+.prose-pare tbody tr:last-child td {
+  border-bottom: 0;
+}
+/* First column is the row label — it carries the comparison axis. */
+.prose-pare tbody td:first-child {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+/* On a phone a comparison table still has to scroll, but the less it has to
+   scroll the better — the point of the table is seeing the columns together.
+   Tighten the cells and let the label column wrap harder before giving up. */
+@media (max-width: 40rem) {
+  .prose-pare table {
+    min-width: 26rem;
+    font-size: 0.75rem;
+  }
+  .prose-pare thead th,
+  .prose-pare tbody td {
+    padding: 0.5rem 0.5rem;
+  }
+  .prose-pare tbody td:first-child {
+    min-width: 6rem;
+  }
+}
