@@ -2,7 +2,7 @@
  * PROPRIETARY — pare.money commercial layer. See ../LICENSE. Not AGPL.
  *
  * The daily SimpleFIN cron: worker.ts's `scheduled()` handler calls this once
- * per trigger (wrangler.full.toml `[triggers] crons`). It scans the D1
+ * per trigger (wrangler.toml `[triggers] crons`). It scans the D1
  * `simplefin_integration` table and runs the SAME sync core the routes use
  * (lib/simplefin/sync.ts) for every user whose integration is due — the core's
  * auto gate (autoSync on, last success >20h old, 1h attempt cooldown) is the
