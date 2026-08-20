@@ -48,6 +48,20 @@ import {
 import * as Sentry from "@sentry/cloudflare";
 import { sentryOptions } from "./lib/sentry";
 
+// MATCHED PAIR with wrangler.toml — change the two together. Every handler and
+// exported Durable Object class below must have a corresponding declaration in
+// wrangler.toml ([[queues.consumers]], [[containers]], [[durable_objects]],
+// [triggers]); exporting a DO class the config never declares breaks the deploy.
+//
+// `main` and `deploy/full-app` now carry the SAME config and the SAME entry
+// module. They used to differ — main had a trimmed config with these handlers
+// removed — and that split drifted unnoticed for 38 commits before breaking a
+// deploy merge. Don't reintroduce it.
+//
+// Handlers only run when their trigger is configured, so this file is safe on a
+// deploy whose resources aren't provisioned: no queue consumer means `queue`
+// never fires, no Email Routing rule means `email` never fires, no [triggers]
+// cron means `scheduled` never fires.
 const handler = {
   // The Next.js app's fetch handler, untouched.
   fetch: (openNextHandler as { fetch: (...args: unknown[]) => Promise<Response> }).fetch,

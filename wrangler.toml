@@ -1,10 +1,30 @@
-# Cloudflare Workers config for Pare — FULL APP (branch: deploy/full-app).
+# Cloudflare Workers config for Pare — the FULL hosted app.
 #
 # The complete hosted data plane: D1 auth, per-user DOs, R2 PDFs, the parse queue
-# + Container parser, KV job status, rate limiters. Promoted from main's
-# wrangler.full.toml (kept there alongside the waitlist-trimmed wrangler.toml).
-# The build emits .open-next/worker.js (the Worker entrypoint) and
-# .open-next/assets (static assets), referenced below.
+# + Container parser, KV job status, rate limiters. The build emits
+# .open-next/worker.js (the Worker entrypoint) and .open-next/assets (static
+# assets), referenced below.
+#
+# ── FORKING THIS REPO ──────────────────────────────────────────────────────────
+# The resource ids below (D1 `database_id`, the KV namespace `id`) point at
+# pare.money's OWN Cloudflare account. They are identifiers, not credentials —
+# every write path needs an API token you don't have — but they are useless to a
+# fork and WILL fail its deploy.
+#
+# You do NOT need any of this to run Pare. Self-hosting reads a local SQLite file
+# and touches Cloudflare not at all: `npm run dev`. See DEPLOY.md / the self-host
+# guide.
+#
+# If you genuinely want your own hosted deploy: provision your own resources
+# (`wrangler d1 create`, `wrangler kv namespace create`, `wrangler r2 bucket
+# create`, `wrangler queues create`) and replace every id below with yours.
+#
+# This file previously had a trimmed twin on `main` (no queues/containers/D1) so
+# a throwaway preview could run on the Free plan. That split silently drifted for
+# 38 commits and broke a deploy merge, so both branches now carry THIS config —
+# and worker.ts, its matched pair, carries all the handlers it declares. Change
+# the two together, always.
+# ──────────────────────────────────────────────────────────────────────────────
 #
 # The D1 (`DB`) and Durable Object (`USER_DATA`) bindings below are LIVE as of
 # Phase 2: better-auth reads `env.DB` and getRepoForUser() routes per-user data to

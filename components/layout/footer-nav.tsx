@@ -10,9 +10,11 @@ const LINKS: [string, string][] = [
   ["/mcp", "MCP"],
   ["/how-it-works", "How it works"],
   ["/switch", "Switching"],
+  ["/guides", "Statement guides"],
   ["/privacy", "Privacy"],
   ["/security", "Security"],
   ["/terms", "Terms"],
+  ["/ai-info", "AI info"],
 ];
 
 const itemCls =
