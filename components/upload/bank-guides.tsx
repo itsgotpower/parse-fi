@@ -39,13 +39,25 @@ export function BankGuides() {
                   <span className="font-mono text-xs text-muted-foreground hidden group-open:inline">−</span>
                 </span>
               </summary>
-              <ol className="px-4 pb-4 pt-1 space-y-1.5 list-decimal list-inside">
-                {g.steps.map((s, i) => (
-                  <li key={i} className="text-xs text-muted-foreground">
-                    {s}
-                  </li>
-                ))}
-              </ol>
+              <div className="px-4 pb-4 pt-1">
+                <ol className="space-y-1.5 list-decimal list-inside">
+                  {g.steps.map((s, i) => (
+                    <li key={i} className="text-xs text-muted-foreground">
+                      {s}
+                    </li>
+                  ))}
+                </ol>
+                {g.login && (
+                  <a
+                    href={g.login}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 font-mono text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Go to {g.bank} login ↗
+                  </a>
+                )}
+              </div>
             </details>
           );
         })}

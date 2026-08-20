@@ -37,11 +37,18 @@ export interface BankGuide {
   formats: string;
   /** Honest caveat or tip specific to this bank. Not shown on /upload. */
   note: string;
+  /**
+   * Public sign-in URL for the institution's online banking (generic, no
+   * personal info) — the guides send you straight to the download page.
+   * Omitted for the catch-all entry, which has no single bank to link to.
+   */
+  login?: string;
 }
 
 export const BANK_GUIDES: BankGuide[] = [
   {
     slug: "cibc",
+    login: "https://www.cibconline.cibc.com/",
     bank: "CIBC",
     status: "pdf",
     intro:
@@ -57,6 +64,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "american-express",
+    login: "https://www.americanexpress.com/en-ca/account/login/",
     bank: "American Express",
     status: "pdf",
     intro:
@@ -72,6 +80,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "rbc",
+    login: "https://www.rbcroyalbank.com/sign-in.html",
     bank: "RBC",
     status: "beta",
     intro:
@@ -87,6 +96,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "td",
+    login: "https://easyweb.td.com/",
     bank: "TD",
     status: "beta",
     intro:
@@ -102,6 +112,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "scotiabank",
+    login: "https://www.scotiaonline.scotiabank.com/online/authentication/authentication.bns",
     bank: "Scotiabank",
     status: "beta",
     intro:
@@ -117,6 +128,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "bmo",
+    login: "https://www1.bmo.com/banking/digital/sign-in",
     bank: "BMO",
     status: "beta",
     intro:
@@ -132,6 +144,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "tangerine",
+    login: "https://www.tangerine.ca/login/",
     bank: "Tangerine",
     status: "beta",
     intro:
@@ -147,6 +160,7 @@ export const BANK_GUIDES: BankGuide[] = [
   },
   {
     slug: "wealthsimple",
+    login: "https://my.wealthsimple.com/",
     bank: "Wealthsimple",
     status: "beta",
     intro:
